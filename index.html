@@ -1,18 +1,37 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Image uploader</title>
-    <script src=""></script>
+    <title>R2 Image Manager</title>
   </head>
   <body>
-    <div class="container">
-      <h1>Image uploader</h1>
-      <form action="">
-        <input type="file" name="image" id="image" />        <button type="submit">Upload</button>
-        <span class="size">Total size:</span>
-      </form>
+    <h1>R2 Image Manager</h1>
+
+    <div style="margin-bottom: 20px;">
+      <h3>Configuration</h3>
+      <label>Bucket Name: </label>
+      <input type="text" id="bucket" value="homaree" /><br />
+      <label>Directory Path: </label>
+      <input type="text" id="directory" value="testground/" />
+      <p><small>(Make sure it ends with /)</small></p>
     </div>
+
+    <div style="border: 1px solid black; padding: 10px; margin-bottom: 20px;">
+      <h3>Upload Image</h3>
+      <input type="file" id="fileInput" accept="image/*" />
+      <button id="uploadBtn">Upload to R2</button>
+      <div id="uploadStatus"></div>
+    </div>
+
+    <div style="border: 1px solid black; padding: 10px;">
+      <h3>Images in Directory</h3>
+      <button id="listBtn">List / Refresh Images</button>
+      <div id="imageList" style="margin-top: 10px;">
+        <!-- Images will be listed here -->
+      </div>
+    </div>
+
+    <script type="module" src="/uploader.js"></script>
   </body>
 </html>
