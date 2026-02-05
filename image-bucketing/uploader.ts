@@ -6,9 +6,9 @@ import {
 } from "@aws-sdk/client-s3";
 
 // import helper functions
-import { applyTransformations } from "./imageTransformer.js";
-import { TransformationPresets } from "./transformationPreset.js";
-import { formatFileSize, calculateSizeReduction } from "./imageSize.js";
+import { applyTransformations } from "./imageTransformer";
+import { TransformationPresets } from "./transformationPreset";
+import { formatFileSize, calculateSizeReduction } from "./imageSize";
 
 // initialize s3 client
 const s3 = new S3Client({
@@ -21,28 +21,28 @@ const s3 = new S3Client({
 });
 
 // UI Elements
-const uploadBtn = document.getElementById("uploadBtn");
-const listBtn = document.getElementById("listBtn");
-const fileInput = document.getElementById("fileInput");
-const uploadStatus = document.getElementById("uploadStatus");
-const imageList = document.getElementById("imageList");
-const directoryInput = document.getElementById("directory");
-const bucketInput = document.getElementById("bucket");
-const originalSizeEl = document.getElementById("originalSize");
-const transformedSizeEl = document.getElementById("transformedSize");
-const sizeReductionEl = document.getElementById("sizeReduction");
+const uploadBtn = document.getElementById("uploadBtn") as HTMLButtonElement | null;
+const listBtn = document.getElementById("listBtn") as HTMLButtonElement | null;
+const fileInput = document.getElementById("fileInput") as HTMLInputElement | null;
+const uploadStatus = document.getElementById("uploadStatus") as HTMLDivElement | null;
+const imageList = document.getElementById("imageList") as HTMLDivElement | null;
+const directoryInput = document.getElementById("directory") as HTMLInputElement | null;
+const bucketInput = document.getElementById("bucket") as HTMLInputElement | null;
+const originalSizeEl = document.getElementById("originalSize") as HTMLSpanElement | null;
+const transformedSizeEl = document.getElementById("transformedSize") as HTMLSpanElement | null;
+const sizeReductionEl = document.getElementById("sizeReduction") as HTMLSpanElement | null;
 
 //#region upload bucket
 //upload to r2 bucket
 async function uploadFile() {
-  const file = fileInput.files[0];
-  if (!file) {
+  if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
     alert("Please select a file first!");
     return;
   }
 
-  const directory = directoryInput.value || "testground/";
-  const bucket = bucketInput.value || "homaree";
+  const file = fileInput.files[0];
+  const directory = directoryInput?.value || "testground/";
+  const bucket = bucketInput?.value || "homaree";
   const originalName = file.name.replace(/\.[^/.]+$/, ""); // Remove extension
   const key = directory + originalName + "_transformed.gif";
 
@@ -58,19 +58,21 @@ async function uploadFile() {
     if (uploadStatus)
       uploadStatus.innerText =
         "Transforming image (width: 1000px, quality: 35%)...";
+    
     const transformedBlob = await applyTransformations(
       file,
       TransformationPresets.MEDIUM_QUALITY,
-    );
+    ) as Blob;
     const transformedSize = transformedBlob.size;
 
     // Display size information
     if (transformedSizeEl)
       transformedSizeEl.innerText = formatFileSize(transformedSize);
+    
     const reduction = calculateSizeReduction(originalSize, transformedSize);
     if (sizeReductionEl) {
       sizeReductionEl.innerText = `${reduction}% smaller`;
-      sizeReductionEl.style.color = reduction > 0 ? "green" : "red";
+      sizeReductionEl.style.color = parseFloat(reduction) > 0 ? "green" : "red";
     }
 
     if (uploadStatus)
@@ -93,10 +95,10 @@ async function uploadFile() {
       uploadStatus.style.color = "green";
     }
     listImages(); // Refresh the list
-  } catch (error) {
+  } catch (error: any) {
     console.error("Upload Error:", error);
     if (uploadStatus) {
-      uploadStatus.innerText = "Upload failed: " + error.message;
+      uploadStatus.innerText = "Upload failed: " + (error?.message || "Unknown error");
       uploadStatus.style.color = "red";
     }
   } finally {
@@ -107,8 +109,8 @@ async function uploadFile() {
 //#region list images
 // read the images from r2 bucket
 async function listImages() {
-  const directory = directoryInput.value || "testground/";
-  const bucket = bucketInput.value || "homaree";
+  const directory = directoryInput?.value || "testground/";
+  const bucket = bucketInput?.value || "homaree";
 
   if (imageList) imageList.innerHTML = "Loading...";
 
@@ -129,11 +131,13 @@ async function listImages() {
     const ul = document.createElement("ul");
 
     for (const item of listRes.Contents) {
+      if (!item.Key) continue;
       // Skip directory placeholders
       if (item.Key === directory || item.Key.endsWith("/")) continue;
 
       const li = document.createElement("li");
-      li.innerHTML = `<strong>${item.Key}</strong> (${(item.Size / 1024).toFixed(2)} KB)<br>`;
+      const sizeStr = item.Size ? (item.Size / 1024).toFixed(2) : "0.00";
+      li.innerHTML = `<strong>${item.Key}</strong> (${sizeStr} KB)<br>`;
 
       const imgPlaceholder = document.createElement("div");
       imgPlaceholder.innerText = "Fetching image...";
@@ -149,8 +153,12 @@ async function listImages() {
           }),
         );
 
+        if (!getObjRes.Body) {
+          throw new Error("Empty body received");
+        }
+
         // Use transformToByteArray instead of transformToWeb to avoid stream errors
-        const byteArray = await getObjRes.Body.transformToByteArray();
+        const byteArray = await (getObjRes.Body as any).transformToByteArray();
         const blob = new Blob([byteArray], { type: getObjRes.ContentType });
         const objectUrl = URL.createObjectURL(blob);
 
@@ -160,17 +168,17 @@ async function listImages() {
         img.style.display = "block";
         img.style.marginTop = "5px";
         imgPlaceholder.replaceWith(img);
-      } catch (err) {
+      } catch (err: any) {
         console.error("Error reading image:", err);
-        imgPlaceholder.innerText = "Error loading image: " + err.message;
+        imgPlaceholder.innerText = "Error loading image: " + (err?.message || "Unknown error");
       }
     }
 
     if (imageList) imageList.appendChild(ul);
-  } catch (error) {
+  } catch (error: any) {
     console.error("List Error:", error);
     if (imageList)
-      imageList.innerHTML = "Failed to list images: " + error.message;
+      imageList.innerHTML = "Failed to list images: " + (error?.message || "Unknown error");
   }
 }
 

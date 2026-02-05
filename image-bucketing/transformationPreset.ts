@@ -1,7 +1,13 @@
+export interface TransformationPreset {
+  maxWidth: number;
+  quality: number;
+  format: string;
+}
+
 /**
  * Preset transformation configurations
  */
-export const TransformationPresets = {
+export const TransformationPresets: Record<string, TransformationPreset> = {
   // High quality, moderate compression
   HIGH_QUALITY: {
     maxWidth: 1920,

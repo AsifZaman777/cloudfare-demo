@@ -1,3 +1,4 @@
+import { TransformationPreset } from "./transformationPreset";
 
 /**
  * Image Transformation Algorithm
@@ -7,20 +8,17 @@
 /**
  * Apply image transformations
  * @param {File} file - The image file to transform
- * @param {Object} options - Transformation options
- * @param {number} options.maxWidth - Maximum width in pixels (default: 1000)
- * @param {number} options.quality - JPEG quality 0-1 (default: 0.35)
- * @param {string} options.format - Output format (default: 'image/jpeg')
+ * @param {TransformationPreset} options - Transformation options
  * @returns {Promise<Blob>} The transformed image as a Blob
  */
 export async function applyTransformations(
-  file,
-  options = {
+  file: File,
+  options: TransformationPreset = {
     maxWidth: 1000,
     quality: 0.35,
     format: "image/jpeg",
   },
-) {
+): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     const canvas = document.createElement("canvas");
@@ -39,7 +37,12 @@ export async function applyTransformations(
 
       canvas.width = width;
       canvas.height = height;
-      ctx.drawImage(img, 0, 0, width, height);
+      if (ctx) {
+        ctx.drawImage(img, 0, 0, width, height);
+      } else {
+        reject(new Error("Failed to get canvas context"));
+        return;
+      }
 
       // Convert to blob with specified quality
       const quality = options.quality !== undefined ? options.quality : 0.35;

@@ -3,7 +3,7 @@
  * @param {number} bytes - Size in bytes
  * @returns {string} Formatted size string
  */
-export function formatFileSize(bytes) {
+export function formatFileSize(bytes: number): string {
   if (bytes === 0) return "0 Bytes";
   const k = 1024;
   const sizes = ["Bytes", "KB", "MB", "GB"];
@@ -17,7 +17,7 @@ export function formatFileSize(bytes) {
  * @param {number} transformedSize - Transformed file size in bytes
  * @returns {string} Reduction percentage with 2 decimal places
  */
-export function calculateSizeReduction(originalSize, transformedSize) {
+export function calculateSizeReduction(originalSize: number, transformedSize: number): string {
   const reduction = ((originalSize - transformedSize) / originalSize) * 100;
   return reduction.toFixed(2);
 }
