@@ -5,22 +5,18 @@ import {
   ListObjectsV2Command,
 } from "@aws-sdk/client-s3";
 
-// Import image transformation utilities
-import {
-  applyTransformations,
-  formatFileSize,
-  calculateSizeReduction,
-  TransformationPresets,
-} from "./imageTransformer.js";
+// import helper functions
+import { applyTransformations } from "./imageTransformer.js";
+import { TransformationPresets } from "./helper/transformationPreset.js";
+import { formatFileSize, calculateSizeReduction } from "./helper/imageSize.js";
 
-// Initialize S3 Client for R2
+// initialize s3 client
 const s3 = new S3Client({
   region: "auto",
-  endpoint: "https://039efa49062abc578c0096b2c923c46b.r2.cloudflarestorage.com",
+  endpoint: import.meta.env.VITE_R2_S3_API,
   credentials: {
-    accessKeyId: "0607965b5c23d9ea662f18d883ca2f76",
-    secretAccessKey:
-      "5a68f22e2d75af0bbe165919497e5f7066a36547dcbf33979de55adb56ca672a",
+    accessKeyId: import.meta.env.VITE_R2_ACCESS_ID,
+    secretAccessKey: import.meta.env.VITE_R2_SECRET_KEY,
   },
 });
 
@@ -36,7 +32,8 @@ const originalSizeEl = document.getElementById("originalSize");
 const transformedSizeEl = document.getElementById("transformedSize");
 const sizeReductionEl = document.getElementById("sizeReduction");
 
-// --- UPLOAD FUNCTION ---
+//#region upload bucket
+//upload to r2 bucket
 async function uploadFile() {
   const file = fileInput.files[0];
   if (!file) {
@@ -47,7 +44,7 @@ async function uploadFile() {
   const directory = directoryInput.value || "testground/";
   const bucket = bucketInput.value || "homaree";
   const originalName = file.name.replace(/\.[^/.]+$/, ""); // Remove extension
-  const key = directory + originalName + "_transformed.jpg";
+  const key = directory + originalName + "_transformed.gif";
 
   if (uploadStatus) uploadStatus.innerText = "Applying transformations...";
   if (uploadBtn) uploadBtn.disabled = true;
@@ -107,7 +104,8 @@ async function uploadFile() {
   }
 }
 
-// --- LIST & READ FUNCTION ---
+//#region list images
+// read the images from r2 bucket
 async function listImages() {
   const directory = directoryInput.value || "testground/";
   const bucket = bucketInput.value || "homaree";

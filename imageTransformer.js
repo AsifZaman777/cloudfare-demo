@@ -1,3 +1,4 @@
+
 /**
  * Image Transformation Algorithm
  * Applies Cloudinary-like transformations to images client-side
@@ -62,56 +63,4 @@ export async function applyTransformations(
   });
 }
 
-/**
- * Helper function to format file size
- * @param {number} bytes - Size in bytes
- * @returns {string} Formatted size string
- */
-export function formatFileSize(bytes) {
-  if (bytes === 0) return "0 Bytes";
-  const k = 1024;
-  const sizes = ["Bytes", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
-}
 
-/**
- * Calculate size reduction percentage
- * @param {number} originalSize - Original file size in bytes
- * @param {number} transformedSize - Transformed file size in bytes
- * @returns {string} Reduction percentage with 2 decimal places
- */
-export function calculateSizeReduction(originalSize, transformedSize) {
-  const reduction = ((originalSize - transformedSize) / originalSize) * 100;
-  return reduction.toFixed(2);
-}
-
-/**
- * Preset transformation configurations
- */
-export const TransformationPresets = {
-  // High quality, moderate compression
-  HIGH_QUALITY: {
-    maxWidth: 1920,
-    quality: 0.8,
-    format: "image/jpeg",
-  },
-  // Medium quality, good compression (default)
-  MEDIUM_QUALITY: {
-    maxWidth: 1000,
-    quality: 0.35,
-    format: "image/jpeg",
-  },
-  // Low quality, maximum compression
-  LOW_QUALITY: {
-    maxWidth: 640,
-    quality: 0.2,
-    format: "image/jpeg",
-  },
-  // Thumbnail size
-  THUMBNAIL: {
-    maxWidth: 300,
-    quality: 0.7,
-    format: "image/jpeg",
-  },
-};
