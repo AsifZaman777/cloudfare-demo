@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -8,7 +8,7 @@
   <body>
     <h1>R2 Image Manager</h1>
 
-    <div style="margin-bottom: 20px;">
+    <div style="margin-bottom: 20px">
       <h3>Configuration</h3>
       <label>Bucket Name: </label>
       <input type="text" id="bucket" value="homaree" /><br />
@@ -17,17 +17,29 @@
       <p><small>(Make sure it ends with /)</small></p>
     </div>
 
-    <div style="border: 1px solid black; padding: 10px; margin-bottom: 20px;">
+    <div style="border: 1px solid black; padding: 10px; margin-bottom: 20px">
       <h3>Upload Image</h3>
       <input type="file" id="fileInput" accept="image/*" />
       <button id="uploadBtn">Upload to R2</button>
+      <div
+        id="fileSizeInfo"
+        style="margin-top: 10px; padding: 10px; background-color: #f0f0f0"
+      >
+        <p><strong>Original Size:</strong> <span id="originalSize">-</span></p>
+        <p>
+          <strong>Transformed Size:</strong> <span id="transformedSize">-</span>
+        </p>
+        <p>
+          <strong>Size Reduction:</strong> <span id="sizeReduction">-</span>
+        </p>
+      </div>
       <div id="uploadStatus"></div>
     </div>
 
-    <div style="border: 1px solid black; padding: 10px;">
+    <div style="border: 1px solid black; padding: 10px">
       <h3>Images in Directory</h3>
       <button id="listBtn">List / Refresh Images</button>
-      <div id="imageList" style="margin-top: 10px;">
+      <div id="imageList" style="margin-top: 10px">
         <!-- Images will be listed here -->
       </div>
     </div>
