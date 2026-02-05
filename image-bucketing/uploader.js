@@ -7,16 +7,16 @@ import {
 
 // import helper functions
 import { applyTransformations } from "./imageTransformer.js";
-import { TransformationPresets } from "./helper/transformationPreset.js";
-import { formatFileSize, calculateSizeReduction } from "./helper/imageSize.js";
+import { TransformationPresets } from "./transformationPreset.js";
+import { formatFileSize, calculateSizeReduction } from "./imageSize.js";
 
 // initialize s3 client
 const s3 = new S3Client({
   region: "auto",
-  endpoint: import.meta.env.VITE_R2_S3_API,
+  endpoint: import.meta.env.APP_R2_S3_API,
   credentials: {
-    accessKeyId: import.meta.env.VITE_R2_ACCESS_ID,
-    secretAccessKey: import.meta.env.VITE_R2_SECRET_KEY,
+    accessKeyId: import.meta.env.APP_R2_ACCESS_ID,
+    secretAccessKey: import.meta.env.APP_R2_SECRET_KEY,
   },
 });
 
